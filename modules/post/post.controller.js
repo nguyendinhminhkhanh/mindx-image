@@ -1,4 +1,5 @@
 const PostModel = require("./post");
+const CommentModel = require("../comment/comment");
 
 //[GET] api/posts/
 const getAllPosts = async (req, res) => {
@@ -83,9 +84,68 @@ const updatePost = async (req, res) => {
   }
 };
 
+const deletePost = async (req, res) => {
+  try {
+    const { postId } = req.params.body;
+
+    const deletePost = await PostModel.findOneAndDelete({ _id: postId });
+    res.send({
+      success: 1,
+      data: deletePost,
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: 0,
+      data: null,
+      message: error.message || "Something went wrong",
+    });
+  }
+};
+
+const incLikePost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const postModel = await PostModel.findOneAndUpdate(
+      { _id: postId },
+      { $inc: { likeCount: 1 } },
+      { new: true }
+    );
+    res.send({
+      success: 1,
+      data: postModel,
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: 0,
+      data: null,
+      message: error.message || "Some thing went wrong",
+    });
+  }
+};
+
+const getCommentByPost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const comments = await CommentModel.find({ postId });
+    res.send({
+      success: 1,
+      data: comments,
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: 0,
+      data: null,
+      message: error.message || "Some thing went wrong",
+    });
+  }
+};
+
 module.exports = {
   getAllPosts,
   getPost,
   createPost,
   updatePost,
+  deletePost,
+  incLikePost,
+  getCommentByPost,
 };
