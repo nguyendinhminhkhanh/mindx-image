@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const UserModel = require("./user");
-
+const tokenProvider = require("../../common/tokenProvider");
 //[POST] /api/auth/signup
 const signUp = async (req, res) => {
   try {
@@ -29,11 +29,14 @@ const signUp = async (req, res) => {
       password: hashPassword,
     });
 
+    const token = tokenProvider.sign(newUser._id);
+
     res.send({
       success: 1,
       data: {
         _id: newUser._id,
         username: newUser.username,
+        token,
       },
     });
   } catch (error) {
@@ -62,11 +65,13 @@ const login = async (req, res) => {
       throw new Error("Đăng nhập thất bại(password không đúng )");
     }
 
+    const token = tokenProvider.sign(existedUser._id);
     res.send({
       success: 1,
       data: {
         _id: existedUser._id,
         username: existedUser.username,
+        token,
       },
     });
   } catch (error) {

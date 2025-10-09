@@ -1,5 +1,7 @@
 const PostModel = require("./post");
 const CommentModel = require("../comment/comment");
+const UserModel = require("../auth/user");
+const jwt = require("jsonwebtoken");
 
 //[GET] api/posts/
 const getAllPosts = async (req, res) => {
@@ -45,8 +47,13 @@ const getPost = async (req, res) => {
 //[POST] api/posts
 const createPost = async (req, res, next) => {
   try {
+    const { user } = req.user;
+
     const newPostData = req.body;
-    const newPost = await PostModel.create(newPostData);
+    const newPost = await PostModel.create({
+      ...newPostData,
+      createBy: user._id,
+    });
 
     res.send({
       success: 1,
@@ -65,12 +72,18 @@ const createPost = async (req, res, next) => {
 const updatePost = async (req, res) => {
   try {
     const { postId } = req.params;
+    const { user } = req;
     const updatePostData = req.body;
     const updatePost = await PostModel.findOneAndUpdate(
-      { _id: postId },
+      { _id: postId, createBy: user._id },
       updatePostData,
       { new: true }
     );
+
+    if (!updatePost) {
+      throw new Error("Not fount post");
+    }
+
     res.send({
       success: 1,
       data: updatePost,
