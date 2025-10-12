@@ -7,7 +7,7 @@ const PostSchema = new mongoose.Schema(
       require: true,
     },
     title: { type: String, require: true },
-    description: String,
+    description: { type: String },
     likeCount: { type: Number, default: 0 },
     createBy: {
       type: mongoose.Types.ObjectId,

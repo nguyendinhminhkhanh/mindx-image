@@ -9,7 +9,7 @@ const getAllPosts = async (req, res) => {
     const posts = await PostModel.find();
     res.send({
       success: 1,
-      dapa: posts,
+      data: posts,
     });
   } catch {
     res.status(400).send({
@@ -47,8 +47,10 @@ const getPost = async (req, res) => {
 //[POST] api/posts
 const createPost = async (req, res, next) => {
   try {
-    const { user } = req.user;
+    const { user } = req;
+    console.log("Create post", user);
 
+    
     const newPostData = req.body;
     const newPost = await PostModel.create({
       ...newPostData,

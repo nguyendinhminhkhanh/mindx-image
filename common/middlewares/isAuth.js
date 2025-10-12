@@ -1,13 +1,14 @@
 const tokenProvider = require("../tokenProvider");
 const UserModel = require("../../modules/auth/user");
 const isAuth = async (req, res, next) => {
-  const token = req.header.authorization;
+  const token = req.headers.authorization;
   try {
     if (!token) {
       throw new Error("Not have token");
     }
 
     const identityData = tokenProvider.verify(token);
+    console.log(identityData.userId);
     if (!identityData.userId) {
       throw new Error("Invalid token ");
     }
