@@ -5,6 +5,7 @@ const createPostSchema = Joi.object({
   description: Joi.string().allow("").allow(null),
   imageUrl: Joi.string().pattern(new RegExp("^http.*$")).required(),
   likeCount: Joi.number().allow(null),
+  tags: Joi.array().allow(null),
 });
 
 module.exports = {
