@@ -2,7 +2,9 @@ const CommentModel = require("./comment");
 
 const getAllComment = async (req, res) => {
   try {
-    const comments = await CommentModel.find();
+    const comments = await CommentModel.find()
+      .populate("postId", "title")
+      .populate("createBy");
     res.send({
       success: 1,
       data: comments,
@@ -13,5 +15,5 @@ const getAllComment = async (req, res) => {
 };
 
 module.exports = {
-    getAllComment
+  getAllComment,
 };
