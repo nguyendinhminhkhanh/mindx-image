@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const PostRouter = require("./modules/post");
 const AuthRouter = require("./modules/auth");
 const CommentRouter = require("./modules/comment");
+const UploadRouter = require("./modules/upload");
 const log = require("./common/middlewares/log");
 const errorHandle = require("./common/errorHandle");
 
@@ -17,9 +18,12 @@ async function main() {
 
   app.use(express.json());
 
+  app.use("/uploads", express.static("uploads"));
+
   app.use("/api/posts", PostRouter);
   app.use("/api/auth", AuthRouter);
   app.use("/api/comment", CommentRouter);
+  app.use("/api/upload", UploadRouter);
 
   app.use(errorHandle);
 
