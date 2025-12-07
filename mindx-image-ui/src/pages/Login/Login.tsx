@@ -1,10 +1,10 @@
-import React from "react";
 import { MainLayout } from "../../components/Layout";
-export default function PostList() {
+
+export default function Login() {
   return (
     <div>
       <MainLayout>
-        <div>Dady laf trang post list</div>
+        <div>Day la trang login </div>
       </MainLayout>
     </div>
   );
