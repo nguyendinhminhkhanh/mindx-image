@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const PostRouter = require("./modules/post");
 const AuthRouter = require("./modules/auth");
@@ -14,6 +15,7 @@ async function main() {
   console.log("MongoDB connected!");
 
   const app = express();
+  app.use(cors());
   app.use(log);
 
   app.use(express.json());
@@ -29,7 +31,7 @@ async function main() {
 
   app.listen(process.env.PORT || 9000, (err) => {
     if (err) throw err;
-    console.log("Server connected");
+    console.log(`Server connected: http://localhost:` + `${process.env.PORT || 9000}`);
   });
 }
 

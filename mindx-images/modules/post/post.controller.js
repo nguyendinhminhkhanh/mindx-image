@@ -121,7 +121,7 @@ const createPost = async (req, res, next) => {
   const newPostData = req.body;
   const newPost = await PostModel.create({
     ...newPostData,
-    createBy: user._id,
+    createdBy: user._id,
   });
 
   res.send({

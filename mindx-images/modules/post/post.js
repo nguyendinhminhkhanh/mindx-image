@@ -14,7 +14,7 @@ const PostSchema = new mongoose.Schema(
     tags:[{
       type: mongoose.Types.ObjectId,
     }],
-    createBy: {
+    createdBy: {
       type: mongoose.Types.ObjectId,
       require: true,
       ref: "User",
