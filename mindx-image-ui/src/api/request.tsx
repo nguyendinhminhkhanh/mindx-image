@@ -4,6 +4,10 @@ const instance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_API_URL || "http://localhost:3000/api",
 });
 
+
+//TRANFORM mọi respone trả về => bỏ qua lớp data của axios 
+//+ fetch res => chính là kết quả trả về 
+//+ axios res.data => chính là kết quả trả về 
 instance.interceptors.response.use(
   (res) => {
     if (res && res.data) {
