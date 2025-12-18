@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { MainLayout } from "../../components/Layout";
 
 // import PostCard from "../../components/PostCard";
@@ -96,6 +96,8 @@ export default function PostList() {
   return (
     <div>
       <MainLayout>{renderPosts()}</MainLayout>
+
+      
       <PaginationPage
         currentPage={currentPage}
         total={total}

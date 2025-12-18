@@ -11,9 +11,13 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "../ui/menubar";
+import { useNavigate } from "react-router";
 export default function Navbar() {
+  const navigator = useNavigate();
+  const handleLogout = () => {
+    navigator("/login");
+  };
   return (
-    
     <Menubar>
       <MenubarMenu>
         <MenubarTrigger>File</MenubarTrigger>
@@ -93,7 +97,9 @@ export default function Navbar() {
           <MenubarItem inset>Edit...</MenubarItem>
           <MenubarSeparator />
           <MenubarItem inset>Add Profile...</MenubarItem>
-          <MenubarItem inset>LogOut</MenubarItem>
+          <MenubarItem inset onClick={handleLogout}>
+            LogOut
+          </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
     </Menubar>
