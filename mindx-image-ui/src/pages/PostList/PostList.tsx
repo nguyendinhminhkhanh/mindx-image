@@ -5,7 +5,7 @@ import { MainLayout } from "../../components/Layout";
 import request from "../../api/request";
 import PostCard from "../../components/PostCard";
 import LoadingPost from "../../components/LoadingPost";
-import ErrorPage from "../../components/ErrorPage";
+import ServerNotFound from "../../components/ErrorPage/serverNotFound";
 import PaginationPage from "../../components/Pagination";
 const PAGE_SIZE = 4;
 
@@ -75,7 +75,7 @@ export default function PostList() {
   };
 
   const renderPosts = () => {
-    if (status === "error") return <ErrorPage></ErrorPage>;
+    if (status === "error") return <ServerNotFound></ServerNotFound>;
     if (status === "idle" || status === "loading")
       return <LoadingPost></LoadingPost>;
     return (
@@ -83,6 +83,7 @@ export default function PostList() {
         {posts.map((post) => (
           <PostCard
             key={post._id}
+            postId={post._id}
             title={post.title}
             description={post.description}
             imageUrl={post.imageUrl}
@@ -97,7 +98,6 @@ export default function PostList() {
     <div>
       <MainLayout>{renderPosts()}</MainLayout>
 
-      
       <PaginationPage
         currentPage={currentPage}
         total={total}

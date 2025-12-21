@@ -6,27 +6,33 @@ import {
   CardDescription,
 } from "../ui/card";
 
+import { Link } from "react-router-dom";
+
 interface PostCardProps {
   imageUrl?: string;
   title?: string;
   description: React.ReactNode;
   createdBy: React.ReactNode;
+  postId: React.ReactNode;
 }
 export default function PostCard({
   imageUrl,
   title,
   description,
   createdBy,
+  postId,
 }: PostCardProps) {
   return (
     <Card className="w-full max-w-sm overflow-hidden rounded-2xl shadow-md">
       {/* Ảnh */}
       <div className="w-full h-48 overflow-hidden">
-        <img
-          src={imageUrl}
-          alt={title}
-          className="w-full h-full object-cover"
-        />
+        <Link to={`/posts/${postId}`}>
+          <img
+            src={imageUrl}
+            alt={title}
+            className="w-full h-full object-cover"
+          />
+        </Link>
       </div>
 
       {/* Nội dung */}

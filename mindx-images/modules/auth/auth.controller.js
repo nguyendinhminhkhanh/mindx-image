@@ -8,17 +8,17 @@ const signUp = async (req, res, next) => {
 
   //check  điều kiện, mặc dù clien đã check
   if (!username) {
-    throw new HttpError("username không được để trống",422);
+    throw new HttpError("username không được để trống", 422);
   }
   if (password && password.length < 6) {
-    throw new HttpError("password cần ít nhất 6 kí tự",422); // promise reject nhảy xuống catch
+    throw new HttpError("password cần ít nhất 6 kí tự", 422); // promise reject nhảy xuống catch
   }
 
   //kiểm tra db có tồn tại user không ? nếu có thì không đăng kí được
   const existedUser = await UserModel.findOne({ username });
 
   if (existedUser) {
-    throw new HttpError("Đăng kí thất bại",400);
+    throw new HttpError("Đăng kí thất bại", 400);
   }
 
   const salt = await bcrypt.genSalt(10); // mã hoá
@@ -48,13 +48,13 @@ const login = async (req, res, next) => {
   //validate user input
   const existedUser = await UserModel.findOne({ username });
   if (!existedUser) {
-    throw new HttpError("Đăng nhập thất bại không có username",400);
+    throw new HttpError("Đăng nhập thất bại không có username", 400);
   }
 
   const hashPassword = existedUser.password;
   const matchedPassword = await bcrypt.compare(password, hashPassword);
   if (!matchedPassword) {
-    throw new HttpError("Đăng nhập thất bại(password không đúng )",400);
+    throw new HttpError("Đăng nhập thất bại(password không đúng )", 400);
   }
 
   const token = tokenProvider.sign(existedUser._id);
@@ -68,8 +68,14 @@ const login = async (req, res, next) => {
     },
   });
 };
+const getUserInfor = async (req, res) => {
+  const { user } = req;
+  const userInfor = user ? { username: user.username, _id: user._id } : null;
+  res.send({ success: 1, data: userInfor });
+};
 
 module.exports = {
   signUp,
   login,
+  getUserInfor,
 };

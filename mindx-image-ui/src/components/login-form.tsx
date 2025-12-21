@@ -2,7 +2,7 @@
 
 //Optional chaining(?.)
 import { toast } from "sonner";
-import { useNavigate } from "react-router";
+import { useNavigate,Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { cn } from "../lib/utils";
 import { Button } from "../components/ui/button";
@@ -49,7 +49,7 @@ export function LoginForm({
       });
       toast.success("Log in successfully.");
       console.log(res);
-      navigate("/postlist");
+      navigate("/");
     } catch (error) {
       console.log(error);
       toast.error("Login information is incorrect!");
@@ -111,7 +111,13 @@ export function LoginForm({
                   Login with Google
                 </Button> */}
                 <FieldDescription className="text-center">
-                  Don&apos;t have an account? <a href="/signup">Sign up</a>
+                  Don&apos;t have an account?{" "}
+                  <Link
+                    className="cursor-pointer"
+                    to="/signup"
+                  >
+                    Sign up
+                  </Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

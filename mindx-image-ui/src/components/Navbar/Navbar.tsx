@@ -11,24 +11,37 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "../ui/menubar";
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
+import { useContext } from "react";
+import { AuthContext } from "../../hook/useAuth";
 export default function Navbar() {
-  const navigator = useNavigate();
   const handleLogout = () => {
-    navigator("/login");
+    console.log("Logout");
   };
+
+  const user = useContext(AuthContext);
+  if (!user) return null;
+
+  const { setUser } = user;
+  setUser(user.user);
+  console.log("hi", user);
   return (
     <Menubar>
       <MenubarMenu>
-        <MenubarTrigger>File</MenubarTrigger>
+        <MenubarTrigger>Posts ({user.user})</MenubarTrigger>
         <MenubarContent>
           <MenubarItem>
-            New Tab <MenubarShortcut>⌘T</MenubarShortcut>
+            <Link to="/posts/create">
+              Create Post <MenubarShortcut>Ctrl + T</MenubarShortcut>
+            </Link>
           </MenubarItem>
           <MenubarItem>
             New Window <MenubarShortcut>⌘N</MenubarShortcut>
           </MenubarItem>
-          <MenubarItem disabled>New Incognito Window</MenubarItem>
+          <MenubarItem>
+            New Incognito Window{" "}
+            {/* <button onClick={() => setUser("khanh dinh")}>Login</button> */}
+          </MenubarItem>
           <MenubarSeparator />
           <MenubarSub>
             <MenubarSubTrigger>Share</MenubarSubTrigger>
@@ -97,9 +110,11 @@ export default function Navbar() {
           <MenubarItem inset>Edit...</MenubarItem>
           <MenubarSeparator />
           <MenubarItem inset>Add Profile...</MenubarItem>
-          <MenubarItem inset onClick={handleLogout}>
-            LogOut
-          </MenubarItem>
+          <Link to="/login">
+            <MenubarItem inset onClick={handleLogout}>
+              LogOut
+            </MenubarItem>
+          </Link>
         </MenubarContent>
       </MenubarMenu>
     </Menubar>

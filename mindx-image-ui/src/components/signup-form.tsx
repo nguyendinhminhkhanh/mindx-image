@@ -1,7 +1,8 @@
 import { Button } from "../components/ui/button";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router-dom";
+
 import request from "../api/request";
 import {
   Card,
@@ -43,7 +44,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       });
       console.log(res);
       toast.success("Đăng kí thành công.");
-      navigator("/postlist");
+      navigator("/");
     } catch (error) {
       console.log(error);
     }
@@ -129,7 +130,13 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                   Sign up with Google
                 </Button> */}
                 <FieldDescription className="px-6 text-center">
-                  Already have an account? <a href="login">Sign in</a>
+                  Already have an account?{" "}
+                  <Link
+                    className="cursor-pointer"
+                    to="/login"
+                  >
+                    Login
+                  </Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
