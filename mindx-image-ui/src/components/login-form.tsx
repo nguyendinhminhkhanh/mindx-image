@@ -2,7 +2,7 @@
 
 //Optional chaining(?.)
 import { toast } from "sonner";
-import { useNavigate,Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { cn } from "../lib/utils";
 import { Button } from "../components/ui/button";
@@ -21,6 +21,8 @@ import {
   FieldLabel,
 } from "../components/ui/field";
 import { Input } from "../components/ui/input";
+import { useContext } from "react";
+import { AuthContext } from "../hook/useAuth";
 // import { useEffect, useState } from "react";
 
 interface LoginForm {
@@ -39,6 +41,12 @@ export function LoginForm({
     formState: { errors },
   } = useForm<LoginForm>();
 
+  const user = useContext(AuthContext);
+  if (!user) {
+    throw new Error("AuthContext must be used within AuthProvider");
+  }
+
+  const { setUser } = user;
   const onSubmit = async (data: LoginForm) => {
     const { username, password } = data;
     try {
@@ -47,8 +55,14 @@ export function LoginForm({
         method: "POST",
         data: { username, password },
       });
+
       toast.success("Log in successfully.");
-      console.log(res);
+
+      if (res.success) {
+        const { token, username, _id } = res.data;
+        localStorage.setItem("token", token);
+        setUser({ _id, username });
+      }
       navigate("/");
     } catch (error) {
       console.log(error);
@@ -112,10 +126,7 @@ export function LoginForm({
                 </Button> */}
                 <FieldDescription className="text-center">
                   Don&apos;t have an account?{" "}
-                  <Link
-                    className="cursor-pointer"
-                    to="/signup"
-                  >
+                  <Link className="cursor-pointer" to="/signup">
                     Sign up
                   </Link>
                 </FieldDescription>

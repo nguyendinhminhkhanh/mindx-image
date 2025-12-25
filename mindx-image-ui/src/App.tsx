@@ -11,13 +11,15 @@ import { useEffect, useState } from "react";
 import request from "./api/request";
 
 import { AuthContext } from "./hook/useAuth";
+import type { User } from "./hook/useAuth";
+import { GuestPage, PrivatePage } from "./RulePage";
 
 function App() {
   const [status, setStatus] = useState("idle");
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+
   useEffect(() => {
     const fetchUserInfor = async () => {
-      setStatus("loading");
       const token = localStorage.getItem("token");
       if (!token) {
         setStatus("done");
@@ -28,9 +30,8 @@ function App() {
           url: "/auth/me",
           method: "GET",
         });
-        if (res.data.success) {
+        if (res.success) {
           setUser(res.data);
-          console.log(user);
           setStatus("done");
         } else {
           setStatus("error");
@@ -42,21 +43,26 @@ function App() {
     };
     fetchUserInfor();
   }, []);
-
   if (status === "idle" || status === "loading") return <div>Loading ...</div>;
 
   if (status === "error") return <div>Error</div>;
 
   return (
-    <AuthContext.Provider value={{user, setUser}}>
+    <AuthContext.Provider value={{ user, setUser }}>
       <Toaster richColors />
       <Routes>
         {/* public routes */}
         <Route path="/" element={<PostsList />} />
-        <Route path="/posts/create" element={<CreatePost />} />
         <Route path="/posts/:id" element={<PostDetail />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+
+        <Route element={<PrivatePage />}>
+          <Route path="/posts/create" element={<CreatePost />} />
+        </Route>
+
+        <Route element={<GuestPage />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Route>
         <Route path="*" element={<ErrorNotPage />} />
 
         {/* protected routes */}

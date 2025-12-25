@@ -18,6 +18,8 @@ import {
   FieldLabel,
 } from "../components/ui/field";
 import { Input } from "../components/ui/input";
+import { useContext } from "react";
+import { AuthContext } from "../hook/useAuth";
 
 interface SignupForm {
   username: string;
@@ -33,6 +35,12 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     formState: { errors },
   } = useForm<SignupForm>();
 
+  const user = useContext(AuthContext);
+  if (!user) {
+    throw new Error("AuthContext must be used within AuthProvider");
+  }
+
+  const { setUser } = user;
   const onSubmit = async (data: SignupForm) => {
     const { username, password } = data;
 
@@ -44,6 +52,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       });
       console.log(res);
       toast.success("Đăng kí thành công.");
+      setUser(res.data);
       navigator("/");
     } catch (error) {
       console.log(error);
@@ -131,10 +140,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 </Button> */}
                 <FieldDescription className="px-6 text-center">
                   Already have an account?{" "}
-                  <Link
-                    className="cursor-pointer"
-                    to="/login"
-                  >
+                  <Link className="cursor-pointer" to="/login">
                     Login
                   </Link>
                 </FieldDescription>

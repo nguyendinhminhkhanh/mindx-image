@@ -10,19 +10,21 @@ import {
 
 interface PageProps {
   currentPage: number;
-  total: number;
-  limit?: number;
+  maxPage: number;
   handleChangePage: (newPage: number) => void;
+  handlePrev: () => void;
+  handleNext: () => void;
 }
 
 export default function PaginationPage({
   currentPage,
-  total,
-  limit = 4,
+  maxPage,
   handleChangePage,
+  handlePrev,
+  handleNext,
 }: PageProps) {
-  const maxPage = Math.ceil(total / limit);
-
+  const isNextDisabled = currentPage === maxPage;
+  const isPrevDisabled = currentPage === 1;
   const renderPageItems = () => {
     const pageItems = [];
     for (let i = 1; i <= maxPage; i++) {
@@ -50,13 +52,19 @@ export default function PaginationPage({
     <Pagination>
       <PaginationContent>
         <PaginationItem>
-          <PaginationPrevious href="#" />
+          <PaginationPrevious
+            className={isPrevDisabled ? "pointer-events-none opacity-50" : "cursor-pointer"}
+            onClick={!isPrevDisabled ? handlePrev : undefined}
+          />
         </PaginationItem>
 
         {renderPageItems()}
 
         <PaginationItem>
-          <PaginationNext href="#" />
+          <PaginationNext
+            className={isNextDisabled ? "pointer-events-none opacity-50" : "cursor-pointer"}
+            onClick={!isNextDisabled ? handleNext : undefined}
+          />
         </PaginationItem>
       </PaginationContent>
     </Pagination>

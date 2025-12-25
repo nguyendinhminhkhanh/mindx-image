@@ -1,12 +1,19 @@
-import { createContext  } from "react";
+import { createContext, useContext } from "react";
+
+export type User = {
+  _id: string;
+  username: string;
+};
 export type AuthContextType = {
-  user: string | null;
-  setUser: React.Dispatch<React.SetStateAction<string | null>>;
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 };
 export const AuthContext = createContext<AuthContextType | null>(null);
-// export function useAuth() {
-//   const user = useContext(AuthContext);
-//   return user; // { user, setUser }
-// }
-
-// export default useAuth;
+export default function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  const { user, setUser } = context;
+  return { user, setUser };
+}

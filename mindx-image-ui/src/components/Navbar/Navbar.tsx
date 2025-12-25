@@ -15,20 +15,22 @@ import { Link } from "react-router";
 import { useContext } from "react";
 import { AuthContext } from "../../hook/useAuth";
 export default function Navbar() {
+  const auth = useContext(AuthContext);
+  if (auth === null) {
+    // Có thể return null, loading, hoặc throw error
+    throw new Error("AuthContext must be used within AuthProvider");
+  }
+  const { user, setUser } = auth;
   const handleLogout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
     console.log("Logout");
   };
 
-  const user = useContext(AuthContext);
-  if (!user) return null;
-
-  const { setUser } = user;
-  setUser(user.user);
-  console.log("hi", user);
   return (
     <Menubar>
       <MenubarMenu>
-        <MenubarTrigger>Posts ({user.user})</MenubarTrigger>
+        <MenubarTrigger>Posts ({user?.username})</MenubarTrigger>
         <MenubarContent>
           <MenubarItem>
             <Link to="/posts/create">
@@ -38,10 +40,7 @@ export default function Navbar() {
           <MenubarItem>
             New Window <MenubarShortcut>⌘N</MenubarShortcut>
           </MenubarItem>
-          <MenubarItem>
-            New Incognito Window{" "}
-            {/* <button onClick={() => setUser("khanh dinh")}>Login</button> */}
-          </MenubarItem>
+          <MenubarItem>New Incognito Window </MenubarItem>
           <MenubarSeparator />
           <MenubarSub>
             <MenubarSubTrigger>Share</MenubarSubTrigger>

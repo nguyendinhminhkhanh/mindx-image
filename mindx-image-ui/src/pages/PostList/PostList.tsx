@@ -22,15 +22,15 @@ interface Post {
 }
 
 export default function PostList() {
+  const limit = 4;
   const [status, setStatus] = useState("ilde");
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
-
+  const maxPage = Math.ceil(total / limit);
   const fetchPosts = async (page: number) => {
     const skip = (page - 1) * PAGE_SIZE;
     const limit = PAGE_SIZE;
-
     try {
       setStatus("loading");
       const res = await request({
@@ -51,7 +51,6 @@ export default function PostList() {
         return;
       }
       setStatus("error");
-      console.log(status);
     } catch (error) {
       console.log(error);
       setStatus("error");
@@ -72,6 +71,13 @@ export default function PostList() {
 
   const handleChangePage = (newPage: number) => {
     setCurrentPage(newPage);
+  };
+
+  const handlePrev = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+  const handleNext = () => {
+    if (currentPage < maxPage) setCurrentPage(currentPage + 1);
   };
 
   const renderPosts = () => {
@@ -100,7 +106,9 @@ export default function PostList() {
 
       <PaginationPage
         currentPage={currentPage}
-        total={total}
+        maxPage={maxPage}
+        handlePrev={handlePrev}
+        handleNext={handleNext}
         handleChangePage={handleChangePage}
       ></PaginationPage>
     </div>
