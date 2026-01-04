@@ -124,6 +124,8 @@ const createPost = async (req, res, next) => {
     createdBy: user._id,
   });
 
+  console.log("New post created", newPost);
+
   res.send({
     success: 1,
     data: newPost,
