@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { Label } from "../../components/ui/label";
+import { Textarea } from "../../components/ui/textarea";
 
 // type Tag = {
 //   name: string;
@@ -124,12 +125,13 @@ export default function CreatePost() {
             {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
-              <Input
+              <Textarea
                 id="description"
-                placeholder="Post description"
+                placeholder="Post description."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
+            
             </div>
 
             {/* Image Upload */}

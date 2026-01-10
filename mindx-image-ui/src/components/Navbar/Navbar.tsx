@@ -32,11 +32,14 @@ export default function Navbar() {
       <MenubarMenu>
         <MenubarTrigger>Posts ({user?.username})</MenubarTrigger>
         <MenubarContent>
-          <MenubarItem>
-            <Link to="/posts/create">
+          <Link to="/">
+            <MenubarItem>Home</MenubarItem>
+          </Link>
+          <Link to="/posts/create">
+            <MenubarItem>
               Create Post <MenubarShortcut>Ctrl + T</MenubarShortcut>
-            </Link>
-          </MenubarItem>
+            </MenubarItem>
+          </Link>
           <MenubarItem>
             New Window <MenubarShortcut>⌘N</MenubarShortcut>
           </MenubarItem>

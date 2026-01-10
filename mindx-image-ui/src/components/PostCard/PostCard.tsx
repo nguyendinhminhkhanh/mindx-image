@@ -1,3 +1,4 @@
+import { Button } from "../ui/button";
 import {
   Card,
   CardContent,
@@ -49,6 +50,7 @@ export default function PostCard({
           {createdBy}
         </p>
       </CardContent>
+      <Button variant="outline">Xem chi tiết</Button>
     </Card>
   );
 }

@@ -31,6 +31,7 @@ export default function PostList() {
   const fetchPosts = async (page: number) => {
     const skip = (page - 1) * PAGE_SIZE;
     const limit = PAGE_SIZE;
+
     try {
       setStatus("loading");
       const res = await request({

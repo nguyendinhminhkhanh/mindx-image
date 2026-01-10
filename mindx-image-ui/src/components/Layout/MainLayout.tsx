@@ -4,9 +4,9 @@ interface MainLayoutProps {
 }
 export default function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div>
+    <div >
       <Navbar></Navbar>
-      <div className="container mt-4">{children}</div>
+      <div className="containe mt-4">{children}</div>
     </div>
   );
 }
