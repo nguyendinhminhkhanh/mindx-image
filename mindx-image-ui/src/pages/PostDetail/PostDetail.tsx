@@ -1,143 +1,169 @@
 import { MainLayout } from "../../components/Layout";
 import { useParams } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../components/ui/card";
+import { Card, CardContent } from "../../components/ui/card";
+import { ShoppingCart, Zap } from "lucide-react";
 import { Separator } from "@radix-ui/react-menubar";
-import { useState } from "react";
 import { Button } from "../../components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../../components/ui/dialog";
 import { Heart } from "lucide-react";
-import { Badge } from "../../components/ui/badge";
+import { Input } from "../../components/ui/input";
+import { useEffect, useState } from "react";
+import request from "../../api/request";
+import LoadingPost from "../../components/LoadingPost";
+type Post = {
+  _id: string;
+  title: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  likeCount: number;
+  createdBy: {
+    username: string;
+  };
+};
 export default function PostDetail() {
   const { id } = useParams();
+
+  const [post, setPost] = useState<Post | null>(null);
+  const [loading, setLoading] = useState(true);
   const product = {
-    imageUrl: "https://picsum.photos/200/300",
-    title: "test 100",
-    description: "Vien nam",
-    likeCount: 0,
-    tags: [],
-    createdBy: "693ada92b9146a5afebe991d",
-    _id: "695a8f84ca6e0cea67ea65c0",
-    createdAt: "2026-01-04T16:04:20.348Z",
-    updatedAt: "2026-01-04T16:04:20.348Z",
+    title: "Tai nghe Bluetooth Pro X",
+    description:
+      "Tai nghe Bluetooth Pro X mang đến chất lượng âm thanh vượt trội, thời lượng pin dài và thiết kế hiện đại. Phù hợp cho học tập, làm việc và giải trí hàng ngày.",
+    price: "1.290.000đ",
+    image: "https://images.unsplash.com/photo-1585386959984-a4155228c0c1",
+    likeCount: 128,
+    createdBy: "Admin",
   };
 
-  const [likeCount, setLikeCount] = useState(product.likeCount);
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (!id) return;
 
-  const handleLike = async () => {
-    setLoading(true);
+    const fetchPost = async () => {
+      try {
+        setLoading(true);
+        const res = await request({
+          method: "GET",
+          url: "/posts/" + id,
+        });
 
-    // Giả lập gọi API
-    setTimeout(() => {
-      setLikeCount((prev) => prev + 1);
-      setLoading(false);
-    }, 800);
-  };
+        // axios interceptor của bạn đã return res.data
+        // nên res chính là data backend trả về
+        setPost(res.data);
+        console.log("Post detail:", res.data);
+      } catch (error) {
+        console.error("Lỗi khi lấy chi tiết bài viết:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchPost();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <LoadingPost></LoadingPost>
+        <div className="text-center py-20">Đang tải dữ liệu...</div>
+      </MainLayout>
+    );
+  }
+  if (!post) {
+    return (
+      <MainLayout>
+        <div className="text-center py-20 text-red-500">
+          Không tìm thấy bài viết
+        </div>
+      </MainLayout>
+    );
+  }
   return (
     <div>
       <MainLayout>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline">Xem chi tiết</Button>
-          </DialogTrigger>
-
-          <DialogContent className="max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>Chi tiết sản phẩm</DialogTitle>
-            </DialogHeader>
-
-            {/* Layout 2 cột */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* LEFT: Image */}
-              <div className="flex justify-center items-start">
-                <img
-                  src={product.imageUrl}
-                  alt={product.title}
-                  className="w-full max-w-sm rounded-lg border object-cover"
-                />
-              </div>
-
-              {/* RIGHT: Info */}
-              <div className="space-y-4">
-                {/* Title */}
-                <div>
-                  <p className="text-sm text-muted-foreground">Tên sản phẩm</p>
-                  <h2 className="text-xl font-semibold">{product.title}</h2>
+        <div className="container mx-auto py-10">
+          <Card className="rounded-2xl shadow-md">
+            <CardContent className="p-8 space-y-10">
+              {/* TOP */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                {/* IMAGE */}
+                <div className="rounded-xl border bg-muted/20 p-6 flex justify-center">
+                  <img
+                    src={post?.imageUrl}
+                    alt={post?.title}
+                    className="w-full max-w-md rounded-xl object-cover"
+                  />
                 </div>
 
-                {/* Description */}
-                <div>
-                  <p className="text-sm text-muted-foreground">Mô tả</p>
-                  <p>{product.description}</p>
-                </div>
+                {/* INFO */}
+                <div className="flex flex-col gap-6">
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Tên sản phẩm
+                    </p>
+                    <h1 className="text-3xl font-bold leading-tight">
+                      {post?.title}
+                    </h1>
+                  </div>
 
-                {/* Tags */}
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Tags</p>
-                  <div className="flex flex-wrap gap-2">
-                    {product.tags.length ? (
-                      product.tags.map((tag, index) => (
-                        <Badge key={index} variant="secondary">
-                          #{tag}
-                        </Badge>
-                      ))
-                    ) : (
-                      <span className="text-sm text-muted-foreground">
-                        Không có tag
-                      </span>
-                    )}
+                  <p className="text-2xl font-semibold text-green-600">
+                    1000.000đ
+                  </p>
+
+                  <h2 className="font-semibold">Mô tả chi tiết:</h2>
+                  <p className="text-sm leading-relaxed text-justify text-muted-foreground">
+                    {post?.description}
+                  </p>
+
+                  {/* META */}
+                  <div className="flex flex-wrap items-center gap-6 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-4 h-4" />
+                      <span>{product.likeCount} lượt thích</span>
+                    </div>
+                    <p>
+                      <span className="text-muted-foreground">Người tạo:</span>{" "}
+                      {product.createdBy}
+                    </p>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <Button className="gap-2">
+                      <Zap className="w-4 h-4" /> Mua ngay
+                    </Button>
+                    <Button variant="outline" className="gap-2">
+                      <ShoppingCart className="w-4 h-4" /> Giỏ hàng
+                    </Button>
                   </div>
                 </div>
+              </div>
 
-                <Separator />
+              <Separator />
 
-                {/* Like */}
-                <div className="flex items-center gap-4">
-                  <Button
-                    onClick={handleLike}
-                    disabled={loading}
-                    className="flex items-center gap-2"
-                  >
-                    <Heart
-                      className={`w-4 h-4 ${loading ? "animate-pulse" : ""}`}
-                    />
-                    {loading ? "Đang like..." : "Like"}
-                  </Button>
-
-                  <span className="text-sm text-muted-foreground">
-                    {likeCount} lượt thích
-                  </span>
+              {/* COMMENTS */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                {/* DESCRIPTION */}
+                <div>
+                  <h2 className="font-semibold mb-2">Mô tả chi tiết</h2>
+                  <p className="text-sm leading-relaxed text-justify text-muted-foreground">
+                    {post?.description}
+                  </p>
                 </div>
 
-                <Separator />
-
-                {/* Meta */}
-                <div className="text-sm space-y-1">
-                  <p>
-                    <span className="text-muted-foreground">Người tạo:</span>{" "}
-                    {product.createdBy}
-                  </p>
-                  <p>
-                    <span className="text-muted-foreground">Ngày tạo:</span>{" "}
-                    {new Date(product.createdAt).toLocaleString("vi-VN")}
-                  </p>
+                {/* COMMENT BOX */}
+                <div className="space-y-4">
+                  <h2 className="font-semibold">Bình luận</h2>
+                  <div className="flex gap-2">
+                    <Input placeholder="Viết bình luận..." />
+                    <Button>Gửi</Button>
+                  </div>
+                  <div className="h-48 rounded-md border p-4 text-sm text-muted-foreground">
+                    Chưa có bình luận nào
+                  </div>
                 </div>
               </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </CardContent>
+          </Card>
+        </div>
       </MainLayout>
     </div>
   );
