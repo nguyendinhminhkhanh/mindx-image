@@ -60,7 +60,7 @@ export default function Navbar() {
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
-        <MenubarTrigger>Card</MenubarTrigger>
+        <MenubarTrigger>Edit</MenubarTrigger>
         <MenubarContent>
           <MenubarItem>
             Undo <MenubarShortcut>⌘Z</MenubarShortcut>
@@ -106,10 +106,10 @@ export default function Navbar() {
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
-        <MenubarTrigger>{user?.username}</MenubarTrigger>
+        <MenubarTrigger>Profiles</MenubarTrigger>
         <MenubarContent>
           <MenubarSeparator />
-          <MenubarItem inset>Profile</MenubarItem>
+          <MenubarItem inset>Edit...</MenubarItem>
           <MenubarSeparator />
           <MenubarItem inset>Add Profile...</MenubarItem>
           <Link to="/login">

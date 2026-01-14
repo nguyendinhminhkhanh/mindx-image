@@ -20,20 +20,61 @@ type Post = {
     username: string;
   };
 };
+
+type Comment = {
+  _id: string;
+  content: string;
+  createdBy: {
+    _id: string;
+    username: string;
+  };
+};
+
 export default function PostDetail() {
   const { id } = useParams();
 
   const [post, setPost] = useState<Post | null>(null);
+  // const [postInfo, setPostInfo] = useState({ status: "idle" });
+  const [listCommentInfo, setListCommentInfo] = useState({
+    status: "idle",
+    comments: [] as Comment[],
+  });
   const [loading, setLoading] = useState(true);
-  const product = {
-    title: "Tai nghe Bluetooth Pro X",
-    description:
-      "Tai nghe Bluetooth Pro X mang đến chất lượng âm thanh vượt trội, thời lượng pin dài và thiết kế hiện đại. Phù hợp cho học tập, làm việc và giải trí hàng ngày.",
-    price: "1.290.000đ",
-    image: "https://images.unsplash.com/photo-1585386959984-a4155228c0c1",
-    likeCount: 128,
-    createdBy: "Admin",
-  };
+  // const product = {
+  //   title: "Tai nghe Bluetooth Pro X",
+  //   description:
+  //     "Tai nghe Bluetooth Pro X mang đến chất lượng âm thanh vượt trội, thời lượng pin dài và thiết kế hiện đại. Phù hợp cho học tập, làm việc và giải trí hàng ngày.",
+  //   price: "1.290.000đ",
+  //   image: "https://images.unsplash.com/photo-1585386959984-a4155228c0c1",
+  //   likeCount: 128,
+  //   createdBy: "Admin",
+  // };
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      setListCommentInfo({ status: "loading", comments: [] });
+      try {
+        const res = await request({
+          method: "GET",
+          url: `/posts/${id}/comments`,
+        });
+        if (res.success) {
+          console.log("Danh sách bình luận:", res.data);
+          setListCommentInfo({
+            status: "done",
+            comments: res.data,
+          });
+          return;
+        }
+
+        setListCommentInfo({ status: "error", comments: [] });
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách bình luận:", error);
+        setListCommentInfo({ status: "error", comments: [] });
+      }
+    };
+    fetchComments();
+  }, [id]);
 
   useEffect(() => {
     if (!id) return;
@@ -118,11 +159,11 @@ export default function PostDetail() {
                   <div className="flex flex-wrap items-center gap-6 text-sm">
                     <div className="flex items-center gap-2">
                       <Heart className="w-4 h-4" />
-                      <span>{product.likeCount} lượt thích</span>
+                      <span>{post?.likeCount} lượt thích</span>
                     </div>
                     <p>
                       <span className="text-muted-foreground">Người tạo:</span>{" "}
-                      {product.createdBy}
+                      {post?.createdBy.username}
                     </p>
                   </div>
 
@@ -156,8 +197,13 @@ export default function PostDetail() {
                     <Input placeholder="Viết bình luận..." />
                     <Button>Gửi</Button>
                   </div>
-                  <div className="h-48 rounded-md border p-4 text-sm text-muted-foreground">
-                    Chưa có bình luận nào
+                  <div className="h-48 space-y-3 overflow-y-auto rounded-md border p-4 text-sm">
+                    {listCommentInfo.comments.map((c) => (
+                      <div key={c._id} className="border-b pb-2">
+                        <p className="font-medium">{c.createdBy.username}</p>
+                        <p className="text-muted-foreground">{c.content}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>

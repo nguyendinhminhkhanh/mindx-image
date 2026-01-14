@@ -9,7 +9,7 @@ const isAuth = async (req, res, next) => {
   }
 
   const identityData = tokenProvider.verify(token);
-  console.log(identityData.userId);
+  console.log("ID user",identityData.userId);
   if (!identityData.userId) {
     throw new HttpError("Invalid token", 401);
   }
@@ -19,7 +19,7 @@ const isAuth = async (req, res, next) => {
     throw new HttpError("Not found user", 401);
   }
 
-  req.user = existedUser;
+  req.user = existedUser; // chỗ này lấy được user để dùng trong các controller
   next();
 };
 

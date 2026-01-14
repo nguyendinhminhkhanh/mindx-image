@@ -15,6 +15,6 @@ router.post(
 router.put("/:postId", isAuth, postController.updatePost);
 router.delete("/:postId", isAuth, postController.deletePost);
 router.put("/:postId/like", isAuth, postController.incLikePost);
-router.put("/:postId/comments", postController.getCommentByPost);
+router.get("/:postId/comments", postController.getCommentByPost);
 
 module.exports = router;

@@ -58,7 +58,7 @@ const login = async (req, res, next) => {
   }
 
   const token = tokenProvider.sign(existedUser._id);
-  console.log(token);
+  console.log("token", token);
   res.send({
     success: 1,
     data: {
