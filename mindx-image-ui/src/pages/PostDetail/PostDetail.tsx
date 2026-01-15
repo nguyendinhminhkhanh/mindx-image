@@ -28,6 +28,7 @@ type Comment = {
     _id: string;
     username: string;
   };
+  createdAt: string;
 };
 
 export default function PostDetail() {
@@ -200,7 +201,12 @@ export default function PostDetail() {
                   <div className="h-48 space-y-3 overflow-y-auto rounded-md border p-4 text-sm">
                     {listCommentInfo.comments.map((c) => (
                       <div key={c._id} className="border-b pb-2">
-                        <p className="font-medium">{c.createdBy.username}</p>
+                        <p className="font-medium">
+                          {c.createdBy.username} - {" "}
+                          <span className="text-sm text-muted-foreground">
+                            {new Date(c.createdAt).toLocaleString("vi-VN")}
+                          </span>{" "}
+                        </p>
                         <p className="text-muted-foreground">{c.content}</p>
                       </div>
                     ))}

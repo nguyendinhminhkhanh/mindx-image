@@ -18,6 +18,7 @@ interface Post {
     _id: string;
     username: string;
   };
+  createdAt?: string;
   // bạn có thể thêm các field khác nếu cần
 }
 
@@ -85,6 +86,7 @@ export default function PostList() {
     if (status === "error") return <ServerNotFound></ServerNotFound>;
     if (status === "idle" || status === "loading")
       return <LoadingPost></LoadingPost>;
+    console.log("Posts:", posts);
     return (
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-6">
         {posts.map((post) => (
@@ -95,6 +97,7 @@ export default function PostList() {
             description={post.description}
             imageUrl={post.imageUrl}
             createdBy={post.createdBy?.username}
+            createdAt={post?.createdAt}
           />
         ))}
       </div>

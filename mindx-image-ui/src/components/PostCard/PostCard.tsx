@@ -19,7 +19,6 @@ import {
 import { Button } from "../../components/ui/button";
 import { Separator } from "../../components/ui/separator";
 import { Heart, ShoppingCart, Zap } from "lucide-react";
-import { Input } from "../ui/input";
 import { DialogDescription } from "@radix-ui/react-dialog";
 
 interface PostCardProps {
@@ -28,6 +27,7 @@ interface PostCardProps {
   description: React.ReactNode;
   createdBy: React.ReactNode;
   postId: React.ReactNode;
+  createdAt?: string;
 }
 
 export default function PostCard({
@@ -36,6 +36,7 @@ export default function PostCard({
   description,
   createdBy,
   postId,
+  createdAt,
 }: PostCardProps) {
   const [likeCount, setLikeCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -153,8 +154,11 @@ export default function PostCard({
           <div className="text-sm space-y-1">
             <p>
               <span className="text-muted-foreground">Ngày tạo:</span>{" "}
-              10/10/2023
-              {/* {new Date(createdAt).toLocaleString("vi-VN")} */}
+           
+                {createdAt
+                  ? new Date(createdAt).toLocaleString("vi-VN")
+                  : "Chưa có thời gian"}
+           
             </p>
           </div>
           {/* Actions */}
