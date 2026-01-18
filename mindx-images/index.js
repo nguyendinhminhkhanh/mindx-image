@@ -8,6 +8,8 @@ const CommentRouter = require("./modules/comment");
 const UploadRouter = require("./modules/upload");
 const log = require("./common/middlewares/log");
 const errorHandle = require("./common/errorHandle");
+const http = require("http");
+const { Server } = require("socket.io");
 
 async function main() {
   await mongoose.connect(process.env.MONGODB_URI);
@@ -17,6 +19,28 @@ async function main() {
   const app = express();
   app.use(cors());
   app.use(log);
+
+  const server = http.createServer(app);
+  const io = new Server(server, {
+    cors: {
+      origin: "http://localhost:5173",
+      methods: ["GET", "POST"],
+    },
+  });
+  // io.on("connection", (socket) => {
+  //   console.log(`User Connected: ${socket.id}`);
+  //   socket.on("send_message", (data) => {
+  //     console.log("data tu clean gui ve", data)
+  //     socket.emit("data",data)
+  //   });
+  // });
+  io.on("connection", (socket) => {
+    console.log(`User Connected: ${socket.id}`);
+    socket.on("sendComment", (data) => {
+      console.log("Comment cletm", data)
+      socket.emit("data",data)
+    });
+  });
 
   app.use(express.json());
 
@@ -29,9 +53,11 @@ async function main() {
 
   app.use(errorHandle);
 
-  app.listen(process.env.PORT || 9000, (err) => {
+  server.listen(process.env.PORT || 9000, (err) => {
     if (err) throw err;
-    console.log(`Server connected: http://localhost:` + `${process.env.PORT || 9000}`);
+    console.log(
+      `Server connected: http://localhost:` + `${process.env.PORT || 9000}`
+    );
   });
 }
 

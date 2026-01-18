@@ -9,6 +9,8 @@ import { Input } from "../../components/ui/input";
 import { useEffect, useState } from "react";
 import request from "../../api/request";
 import LoadingPost from "../../components/LoadingPost";
+import io from "socket.io-client";
+import type { User } from "../../hook/useAuth";
 type Post = {
   _id: string;
   title: string;
@@ -32,9 +34,12 @@ type Comment = {
 };
 
 export default function PostDetail() {
+  const socket = io("http://localhost:3000");
   const { id } = useParams();
-
+  const [user, setUser] = useState<User | null>(null);
+  const [expanded, setExpanded] = useState(false);
   const [post, setPost] = useState<Post | null>(null);
+  
   // const [postInfo, setPostInfo] = useState({ status: "idle" });
   const [listCommentInfo, setListCommentInfo] = useState({
     status: "idle",
@@ -50,6 +55,27 @@ export default function PostDetail() {
   //   likeCount: 128,
   //   createdBy: "Admin",
   // };
+
+  useEffect(() => {
+    const fetchUserInfor = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return;
+      }
+      try {
+        const res = await request({
+          url: "/auth/me",
+          method: "GET",
+        });
+        if (res.success) {
+          setUser(res.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUserInfor();
+  }, []);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -102,6 +128,31 @@ export default function PostDetail() {
     fetchPost();
   }, [id]);
 
+  useEffect(() => {
+    socket.on("data", (data) => {
+      console.log("comment hiên thị :   ", data);
+      console.log("setlistCOmment", listCommentInfo);
+    });
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewComment = (data: Comment) => {
+      setListCommentInfo((prev) => ({
+        ...prev,
+        status: "done",
+        content: [...prev.comments, data],
+      }));
+    };
+
+    socket.on("data", handleNewComment);
+
+    return () => {
+      socket.off("data", handleNewComment);
+    };
+  }, [socket]);
+
   if (loading) {
     return (
       <MainLayout>
@@ -119,6 +170,44 @@ export default function PostDetail() {
       </MainLayout>
     );
   }
+
+  const submitComment = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    console.log("id bai viet ", id);
+    console.log(listCommentInfo);
+
+    const commentContent = formData.get("comment") as string;
+    console.log("Nội dung bình luận của socket:", commentContent);
+
+    socket.emit("sendComment", {
+      content: commentContent,
+      createdBy: {
+        _id: user?._id,
+        username: user?.username,
+      },
+      postId: id,
+    });
+
+    console.log("sendComment", commentContent);
+
+    e.currentTarget.reset();
+
+    // try {
+    //   const res = request({
+    //     method: "POST",
+    //     url: `/comment`,
+    //     data: {
+    //       postId: id,
+    //       content: commentContent,
+    //     },
+    //   });
+    //   console.log("Kết quả gửi bình luận:", res);
+    // } catch (error) {
+    //   console.error("Lỗi khi gửi bình luận:", error);
+    // }
+  };
+
   return (
     <div>
       <MainLayout>
@@ -194,20 +283,41 @@ export default function PostDetail() {
                 {/* COMMENT BOX */}
                 <div className="space-y-4">
                   <h2 className="font-semibold">Bình luận</h2>
-                  <div className="flex gap-2">
-                    <Input placeholder="Viết bình luận..." />
+                  <form onSubmit={submitComment} className="flex gap-2">
+                    <Input
+                      name="comment"
+                      placeholder="Viết bình luận..."
+                      required
+                    />
                     <Button>Gửi</Button>
-                  </div>
+                  </form>
                   <div className="h-48 space-y-3 overflow-y-auto rounded-md border p-4 text-sm">
                     {listCommentInfo.comments.map((c) => (
                       <div key={c._id} className="border-b pb-2">
                         <p className="font-medium">
-                          {c.createdBy.username} - {" "}
+                          {c.createdBy.username} -{" "}
                           <span className="text-sm text-muted-foreground">
                             {new Date(c.createdAt).toLocaleString("vi-VN")}
                           </span>{" "}
                         </p>
-                        <p className="text-muted-foreground">{c.content}</p>
+                        <div>
+                          <p
+                            className={`text-muted-foreground ${
+                              expanded ? "" : "line-clamp-2"
+                            }`}
+                          >
+                            {c.content}
+                          </p>
+
+                          {c.content.length > 100 && (
+                            <button
+                              onClick={() => setExpanded(!expanded)}
+                              className="text-sm hover:underline mt-1 font-bold text-muted-foreground"
+                            >
+                              {expanded ? "- Thu gọn" : "+ Xem thêm"}
+                            </button>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
