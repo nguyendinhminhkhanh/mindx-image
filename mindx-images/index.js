@@ -10,6 +10,7 @@ const log = require("./common/middlewares/log");
 const errorHandle = require("./common/errorHandle");
 const http = require("http");
 const { Server } = require("socket.io");
+const CommentModel = require("./modules/comment/comment");
 
 async function main() {
   await mongoose.connect(process.env.MONGODB_URI);
@@ -36,9 +37,19 @@ async function main() {
   // });
   io.on("connection", (socket) => {
     console.log(`User Connected: ${socket.id}`);
-    socket.on("sendComment", (data) => {
-      console.log("Comment cletm", data)
-      socket.emit("data",data)
+    socket.on("sendComment", async (data) => {
+      const comment = await CommentModel.create({
+        postId: data.postId,
+        content: data.content,
+        createdBy: data.createdBy._id,
+      });
+      console.log("Comment cletm", comment);
+      const fullComment = await CommentModel.findById(comment._id).populate(
+        "createdBy",
+        "username"
+      );
+
+      io.emit("data", fullComment); // gửi comment có _id
     });
   });
 

@@ -6,7 +6,7 @@ import { Separator } from "@radix-ui/react-menubar";
 import { Button } from "../../components/ui/button";
 import { Heart } from "lucide-react";
 import { Input } from "../../components/ui/input";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import request from "../../api/request";
 import LoadingPost from "../../components/LoadingPost";
 import io from "socket.io-client";
@@ -34,12 +34,19 @@ type Comment = {
 };
 
 export default function PostDetail() {
-  const socket = io("http://localhost:3000");
+  const socketRef = useRef<any>(null);
+  useEffect(() => {
+    socketRef.current = io("http://localhost:3000");
+
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, []);
   const { id } = useParams();
   const [user, setUser] = useState<User | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [post, setPost] = useState<Post | null>(null);
-  
+
   // const [postInfo, setPostInfo] = useState({ status: "idle" });
   const [listCommentInfo, setListCommentInfo] = useState({
     status: "idle",
@@ -128,30 +135,24 @@ export default function PostDetail() {
     fetchPost();
   }, [id]);
 
-  useEffect(() => {
-    socket.on("data", (data) => {
-      console.log("comment hiên thị :   ", data);
-      console.log("setlistCOmment", listCommentInfo);
-    });
-  }, [socket]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socketRef.current) return;
 
     const handleNewComment = (data: Comment) => {
       setListCommentInfo((prev) => ({
         ...prev,
         status: "done",
-        content: [...prev.comments, data],
+        comments: [...prev.comments, data],
       }));
     };
 
-    socket.on("data", handleNewComment);
+    socketRef.current.on("data", handleNewComment);
 
     return () => {
-      socket.off("data", handleNewComment);
+      socketRef.current.off("data", handleNewComment);
     };
-  }, [socket]);
+  }, [socketRef.current]);
 
   if (loading) {
     return (
@@ -180,7 +181,7 @@ export default function PostDetail() {
     const commentContent = formData.get("comment") as string;
     console.log("Nội dung bình luận của socket:", commentContent);
 
-    socket.emit("sendComment", {
+    socketRef.current.emit("sendComment", {
       content: commentContent,
       createdBy: {
         _id: user?._id,
