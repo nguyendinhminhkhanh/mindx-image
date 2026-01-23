@@ -17,7 +17,7 @@ const createComment = async (req, res) => {
   try {
     const { postId, content } = req.body;
     const { user } = req;
-    console.log("user dadnwg nhap", user);
+    console.log("user đăng nhập", user);
     const comment = await CommentModel.create({
       postId,
       content,
