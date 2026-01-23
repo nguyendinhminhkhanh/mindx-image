@@ -1,0 +1,19 @@
+.ColoPicker {
+    background-color: white;
+    display: inline-flex;
+    padding: 3px
+}
+
+.ColoPicker .color-item {
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    background-color: cornflowerblue;
+    margin: 4px;
+    border-radius: 4px;
+}
+
+.ColoPicker .color-item.active {
+    outline: 2px solid #ccc;
+    transform: scale(1.1);
+}
